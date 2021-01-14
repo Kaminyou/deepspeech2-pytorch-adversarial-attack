@@ -25,13 +25,14 @@ def torch_spectrogram(sound, torch_stft):
 
 
 class Attacker:
-    def __init__(self, model, sound, target, decoder, device="cpu", save=None):
+    def __init__(self, model, sound, target, decoder, sample_rate=16000, device="cpu", save=None):
         """
         model: deepspeech model
         sound: raw sound data [-1 to +1] (read from torchaudio.load)
         label: string
         """
         self.sound = sound
+        self.sample_rate = sample_rate
         self.target_string = target
         self.target = target
         self.__init_target()
@@ -42,7 +43,10 @@ class Attacker:
         self.decoder = decoder
         self.criterion = nn.CTCLoss()
         self.device = device
-        self.torch_stft = STFT(n_fft=320 , hop_length=160, win_length=320 ,  window='hamming', center=True, pad_mode='reflect', freeze_parameters=True, device=self.device)
+        n_fft = int(self.sample_rate * 0.02)
+        hop_length = int(self.sample_rate * 0.01)
+        win_length = int(self.sample_rate * 0.02)
+        self.torch_stft = STFT(n_fft=n_fft , hop_length=hop_length, win_length=win_length ,  window='hamming', center=True, pad_mode='reflect', freeze_parameters=True, device=self.device)
         self.save = save
     
     def get_ori_spec(self, save=None):
@@ -148,6 +152,7 @@ class Attacker:
         decoded_output, decoded_offsets = self.decoder.decode(out, output_sizes)
         final_output = decoded_output[0][0]
         
+        perturbed_data = perturbed_data.detach()
         abs_ori = 20*np.log10(np.sqrt(np.mean(np.absolute(data_raw.cpu().numpy())**2)))
         abs_after = 20*np.log10(np.sqrt(np.mean(np.absolute(perturbed_data.cpu().numpy())**2)))
         db_difference = abs_after-abs_ori
@@ -156,6 +161,6 @@ class Attacker:
         print(f"Adversarial prediction: {decoded_output[0][0]}")
         print(f"Levenshtein Distance {l_distance}")
         if self.save:
-            torchaudio.save(self.save, src=perturbed_data.cpu(), sample_rate=16000)
+            torchaudio.save(self.save, src=perturbed_data.cpu(), sample_rate=self.sample_rate)
         self.perturbed_data = perturbed_data
         return db_difference, l_distance, self.target_string, final_output

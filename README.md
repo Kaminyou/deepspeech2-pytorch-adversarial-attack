@@ -21,6 +21,12 @@ Then, you should download the DeepSpeech pretrained model from this [link](https
 Deep Speech 2 <sup>[1]</sup> is a modern ASR system, which enables end-to-end training as spectrogram is directly utilized to generate predicted sentence. In this work, PGD (Projected gradient descent) and FGSM (Fast Gradient Sign Method) algorithms are implemented to conduct adversarial attack against this ASR system.
 1. Amodei, D., Ananthanarayanan, S., Anubhai, R., Bai, J., Battenberg, E., Case, C., ... & Zhu, Z. (2016, June). Deep speech 2: End-to-end speech recognition in english and mandarin. In International conference on machine learning (pp. 173-182).
 
+## Preprocessing
+It is necessary to resample the input wav file with `sample_rate=16000`. A convenient script is provided to resample them.
+```script
+python3 preprocessing --input_folder folder_path --output_folder folder_path
+```
+
 ## Usage
 It is easy to perturb the original raw wave file to generate desired sentence with `main.py`.
 ```script
