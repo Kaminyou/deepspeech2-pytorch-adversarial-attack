@@ -33,7 +33,7 @@ if __name__ == "__main__":
     sound, sample_rate = torchaudio.load(args.input_wav)
     target_sentence = args.target_sentence.upper()
     if args.output_wav == "None":
-        output_wav = None
+        args.output_wav = None
     attacker = Attacker(model=model, sound=sound, target=target_sentence, decoder=decoder, device=args.device, save=output_wav)
 
     attacker.attack(epsilon = args.epsilon, alpha=args.alpha, attack_type=args.mode, PGD_round=args.PGD_iter)
