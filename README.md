@@ -7,8 +7,8 @@ It is recommended to setup your folders of [DeepSpeech 2 PyTorch](https://github
 ```
 ROOT_FOLDER/
 ├── this_repo/
-├   ├──main.py
-|   └──...
+│   ├──main.py
+│   └──...
 ├──deepspeech.pytorch/
 │   ├──models/
 │   │   └──librispeech/
